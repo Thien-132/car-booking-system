@@ -27,6 +27,16 @@ public class Booking {
 
     private Double totalPrice;
 
+    private String damageStatus; // OK / DAMAGED
+    private Double damageFee;
+    private Boolean damagePaid;
+
+    @Column(name = "return_image")
+    private String returnImage;
+
+    @Column(name = "return_note")
+    private String returnNote;
+
     /** Tỷ lệ đặt cọc: 20, 50 hoặc 70 (% tổng tiền thuê). */
     @Column(name = "deposit_percent")
     private Integer depositPercent;
@@ -81,6 +91,46 @@ public class Booking {
 
     public void setFullPaid(Boolean fullPaid) {
         this.fullPaid = fullPaid;
+    }
+
+    public String getReturnImage() {
+        return returnImage;
+    }
+
+    public void setReturnImage(String returnImage) {
+        this.returnImage = returnImage;
+    }
+
+    public String getReturnNote() {
+        return returnNote;
+    }
+
+    public void setReturnNote(String returnNote) {
+        this.returnNote = returnNote;
+    }
+
+    public String getDamageStatus() {
+        return damageStatus;
+    }
+
+    public void setDamageStatus(String damageStatus) {
+        this.damageStatus = damageStatus;
+    }
+
+    public Double getDamageFee() {
+        return damageFee;
+    }
+
+    public void setDamageFee(Double damageFee) {
+        this.damageFee = damageFee;
+    }
+
+    public Boolean getDamagePaid() {
+        return damagePaid;
+    }
+
+    public void setDamagePaid(Boolean damagePaid) {
+        this.damagePaid = damagePaid;
     }
 }
 

@@ -31,30 +31,40 @@
             height: 64px;
             object-fit: cover;
             border-radius: 8px;
-            flex-shrink: 0;
         }
 
-        .car-mini .meta {
-            font-size: 0.8rem;
-            color: #666;
+        .return-form {
+            border: 1px dashed #ccc;
+            padding: 8px;
+            border-radius: 8px;
+            background: #fff8e1;
         }
 
-        .car-mini .title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 2px;
+        .damage-box {
+            font-size: 13px;
+            margin-top: 5px;
         }
 
-        @media (max-width: 768px) {
-            .car-mini {
-                flex-direction: column;
-            }
-            .car-mini img {
-                width: 100%;
-                height: 120px;
-            }
+        .damage-ok {
+            color: green;
+            font-weight: bold;
         }
+
+        .damage-bad {
+            color: red;
+            font-weight: bold;
+        }
+
+        .damage-box {
+            font-size: 13px;
+        }
+
+        .damage-box .btn {
+            width: 100%;
+        }
+
     </style>
+
 </head>
 
 <body>
@@ -74,7 +84,8 @@
                     <th>Ngày</th>
                     <th>Trạng thái</th>
                     <th>Cọc</th>
-                    <th>Thanh toán khi nhận xe</th>
+                    <th>Thanh toán</th>
+                    <th>Đền bù</th> <!-- 🔥 THÊM -->
                 </tr>
 
                 <tr th:each="row : ${rows}" th:with="b=${row.booking}, c=${row.car}">
@@ -83,67 +94,107 @@
 
                     <td>
                         <div th:if="${c != null}" class="car-mini">
-                            <img th:src="${c.image != null ? c.image : 'https://via.placeholder.com/96x64'}"
-                                 th:alt="${c.name}">
+                            <img th:src="${c.image != null ? c.image : 'https://via.placeholder.com/96x64'}">
                             <div>
-                                <div class="title" th:text="${c.name}">—</div>
-                                <div class="meta">
-                                    <span th:text="${c.brand}">—</span>
-                                    · <span th:text="${c.seats}">—</span> chỗ
-                                    · <span th:text="${c.fuelType ?: '—'}">—</span>
-                                    · <span th:text="${c.transmission}">—</span>
-                                </div>
-                                <div class="meta mt-1">
-                                    <span class="text-danger fw-semibold"
-                                          th:text="${#numbers.formatDecimal(c.price,0,'COMMA',0,'POINT')}">0</span>
-                                    VND/ngày
-                                </div>
-                                <a th:href="@{'/car/' + ${c.id}}" class="btn btn-link btn-sm p-0 mt-1">Xem chi tiết xe →</a>
+                                <b th:text="${c.name}"></b><br>
+                                <small th:text="${c.brand}"></small>
                             </div>
-                        </div>
-                        <div th:if="${c == null}" class="text-muted small">
-                            Xe mã <strong th:text="${b.carId}">—</strong>
-                            <span class="d-block">(Không còn trong hệ thống)</span>
                         </div>
                     </td>
 
                     <td>
-                        <span th:text="${b.startDate}"></span>
-                        –
+                        <span th:text="${b.startDate}"></span> -
                         <span th:text="${b.endDate}"></span>
                     </td>
 
-                    <td>
-                        <th:block th:switch="${b.status}">
-                            <span th:case="'PENDING'">Chờ duyệt</span>
-                            <span th:case="'APPROVED'">Đã duyệt</span>
-                            <span th:case="'REJECTED'">Đã từ chối</span>
-                            <span th:case="'PAID'">Đã thanh toán</span>
-                            <span th:case="'COMPLETED'">Đã hoàn thành</span>
-                            <span th:case="*" th:text="${b.status}">—</span>
-                        </th:block>
-                    </td>
+                    <td th:text="${b.status}"></td>
 
-                    <td class="small">
-                        <span th:if="${b.depositPercent != null}">
-                            <span th:text="${b.depositPercent}">—</span>% ·
-                            <span th:text="${b.depositMethod}">—</span>
-                        </span>
-                        <span th:if="${b.depositPercent == null}">—</span>
-                    </td>
+                    <td th:text="${b.depositPercent}"></td>
 
+                    <!-- ACTION -->
                     <td>
+
                         <a th:if="${b.status == 'APPROVED'}"
                            th:href="@{'/payment/' + ${b.id}}"
                            class="btn btn-primary btn-sm">
-                            💳 Thanh toán còn lại
+                            💳 Thanh toán
                         </a>
+
                         <a th:if="${b.status == 'PAID'}"
                            th:href="@{'/complete-booking/' + ${b.id}}"
-                           class="btn btn-success btn-sm"
-                           onclick="return confirm('Xác nhận hoàn thành thuê xe?');">
+                           class="btn btn-success btn-sm">
                             ✅ Hoàn thành
                         </a>
+
+                        <form th:if="${b.status == 'COMPLETED'}"
+                              th:action="@{/return-car/{id}(id=${b.id})}"
+                              method="post"
+                              enctype="multipart/form-data"
+                              class="return-form mt-2">
+
+                            <input type="file" name="image" multiple class="form-control">
+
+                            <textarea name="note"
+                                      placeholder="Mô tả tình trạng xe..."
+                                      class="form-control mb-1"></textarea>
+
+                            <button type="submit" class="btn btn-warning btn-sm w-100">
+                                📸 Gửi tình trạng xe
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                    <!-- 🔥 PHẦN ĐỀN BÙ -->
+                    <td class="damage-box">
+
+                        <!-- chưa kiểm tra -->
+                        <span th:if="${b.damageStatus == null}" class="text-muted">
+        ⏳ Chưa kiểm tra
+    </span>
+
+                        <!-- OK -->
+                        <span th:if="${b.damageStatus == 'OK'}" class="text-success">
+        ✔ Không hư
+    </span>
+
+                        <!-- BỊ TRẦY -->
+                        <div th:if="${b.damageStatus == 'DAMAGED'}">
+
+                            <!-- CHƯA THANH TOÁN -->
+                            <div th:if="${b.damagePaid == false || b.damagePaid == null}">
+
+        <span class="text-danger">
+            ❌ Bị trầy <br>
+            Đền: <b th:text="${b.damageFee}"></b> VND
+        </span>
+
+                                <!-- QR -->
+                                <div class="mt-2 text-center">
+                                    <img src="/images/MaQR.jpg" width="150">
+                                    <div style="font-size:12px">
+                                        Nội dung: DEN_BU_<span th:text="${b.id}"></span>
+                                    </div>
+                                </div>
+
+                                <!-- NÚT -->
+                                <a th:href="@{'/confirm-paid/' + ${b.id}}"
+                                   class="btn btn-success btn-sm mt-2">
+                                    ✔ Tôi đã chuyển khoản
+                                </a>
+
+                            </div>
+
+                            <!-- ĐÃ THANH TOÁN -->
+                            <div th:if="${b.damagePaid == true}">
+        <span class="text-success">
+            ✔ Đã thanh toán
+        </span>
+                            </div>
+
+                        </div>
+
                     </td>
 
                 </tr>

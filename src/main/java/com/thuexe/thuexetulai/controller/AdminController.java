@@ -200,4 +200,22 @@ public class AdminController {
 
         return "redirect:/admin/car-rentals";
     }
+
+    @GetMapping("/admin/check-ok/{id}")
+    public String checkOk(@PathVariable Long id) {
+        Booking b = bookingRepository.findById(id).orElseThrow();
+        b.setDamageStatus("OK");
+        b.setDamageFee(0.0);
+        bookingRepository.save(b);
+        return "redirect:/admin/bookings";
+    }
+
+    @GetMapping("/admin/check-damage/{id}")
+    public String checkDamage(@PathVariable Long id) {
+        Booking b = bookingRepository.findById(id).orElseThrow();
+        b.setDamageStatus("DAMAGED");
+        b.setDamageFee(500000.0); // tiền đền
+        bookingRepository.save(b);
+        return "redirect:/admin/bookings";
+    }
 }
