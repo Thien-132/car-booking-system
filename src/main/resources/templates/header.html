@@ -32,11 +32,15 @@
                     <!-- CHƯA ĐĂNG NHẬP -->
 
                     <li class="nav-item" th:if="${session.user == null}">
-                        <a class="nav-link" href="/login">Đăng nhập</a>
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            Đăng nhập
+                        </a>
                     </li>
 
                     <li class="nav-item" th:if="${session.user == null}">
-                        <a class="nav-link" href="/register">Đăng ký</a>
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            Đăng ký
+                        </a>
                     </li>
 
                     <!-- ĐÃ ĐĂNG NHẬP -->
@@ -65,39 +69,47 @@
                                 </a>
                             </li>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><hr class="dropdown-divider"></li>
 
-                            <li class="nav-item" th:if="${session.user.role == 'ADMIN'}">
-                                <a class="nav-link" href="/admin">
+                            <!-- ADMIN -->
+
+                            <li th:if="${session.user.role == 'ADMIN'}">
+                                <a class="dropdown-item" href="/admin">
                                     🔐 Quản trị
                                 </a>
                             </li>
 
-                            <li class="nav-item" th:if="${session.user.role == 'ADMIN'}">
-                                <a class="nav-link" href="/admin/bookings">
+                            <li th:if="${session.user.role == 'ADMIN'}">
+                                <a class="dropdown-item" href="/admin/bookings">
                                     📋 Quản lý booking
                                 </a>
                             </li>
 
-                            <li class="nav-item" th:if="${session.user.role == 'ADMIN'}">
-                                <a class="nav-link" href="/admin/cars">
+                            <li th:if="${session.user.role == 'ADMIN'}">
+                                <a class="dropdown-item" href="/admin/cars">
                                     🚗 Quản lý xe
                                 </a>
                             </li>
 
-                            <li class="nav-item" th:if="${session.user.role == 'ADMIN'}">
-                                <a class="nav-link" href="/admin/car-rentals">
+                            <li th:if="${session.user.role == 'ADMIN'}">
+                                <a class="dropdown-item" href="/admin/car-rentals">
                                     📊 Xe đang thuê
                                 </a>
                             </li>
 
-                            <a href="/admin/dashboard">📊 Thống kê</a>
+                            <li>
+                                <a class="dropdown-item" href="/admin/dashboard">
+                                    📊 Thống kê
+                                </a>
+                            </li>
 
-                            <a href="/delivery" class="btn btn-primary">
-                                🚚 Giao xe tận nơi
-                            </a>
+                            <li>
+                                <a class="dropdown-item" href="/delivery">
+                                    🚚 Giao xe tận nơi
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
 
                             <li>
                                 <a class="dropdown-item text-danger" href="/logout">

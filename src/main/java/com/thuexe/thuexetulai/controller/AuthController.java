@@ -102,4 +102,14 @@ public class AuthController {
         session.invalidate();
         return "redirect:/login";
     }
+    @GetMapping("/profile")
+    public String profile(HttpSession session){
+
+        // nếu chưa login → quay về trang chủ
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        return "profile";
+    }
 }
